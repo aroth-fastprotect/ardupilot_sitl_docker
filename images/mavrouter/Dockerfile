@@ -1,14 +1,10 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04 AS builder
 
-RUN apt-get update -y
-
-RUN apt-get install -y git python g++ ccache gawk make wget cmake python-pip iproute2 python-future python3-future libtool autoconf pkg-config
-
-RUN useradd --create-home pilot
+RUN apt-get update -y; \
+    apt-get install -y git meson ninja-build pkg-config gcc g++ systemd; \
+    useradd --create-home pilot
 
 USER pilot
-
-WORKDIR /home/pilot
 
 WORKDIR /home/pilot
 
@@ -18,12 +14,16 @@ WORKDIR /home/pilot/mavlink-router
 
 RUN git submodule update --init --recursive
 
-RUN ./autogen.sh && ./configure CFLAGS='-g -O2' --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib64 --prefix=/usr --disable-systemd
+RUN cd /home/pilot/mavlink-router && \
+    meson setup build . && \
+    ninja -C build && \
+    DESTDIR=/home/pilot/dist ninja -C build install
 
-RUN make
+FROM ubuntu:22.04
+RUN apt-get update && \
+    apt-get install --no-install-recommends --no-install-suggests -y bash libc6 libgcc-s1 && \
+    apt-get clean && \
+    rm -rf /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-USER root
-
-RUN make install
-
-USER pilot
+COPY --from=builder /home/pilot/dist/usr/bin/mavlink-routerd /usr/bin/mavlink-routerd
+ENTRYPOINT '/usr/bin/mavlink-routerd'
