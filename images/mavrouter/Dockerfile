@@ -26,4 +26,4 @@ RUN apt-get update && \
     rm -rf /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=builder /home/pilot/dist/usr/bin/mavlink-routerd /usr/bin/mavlink-routerd
-ENTRYPOINT '/usr/bin/mavlink-routerd'
+CMD "/usr/bin/mavlink-routerd"

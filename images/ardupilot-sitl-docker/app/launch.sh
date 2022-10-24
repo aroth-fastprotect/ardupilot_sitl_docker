@@ -11,7 +11,7 @@ echo "LAUNCH.SH: System ID will be $SYSID"
 if [ -z "$STARTPOSE" ]
 then
   echo "LAUNCH.SH: taking STARTPOSE from starts.txt file"
-  STARTPOSE=$(tail -n +$SYSID /home/pilot/app/starts.txt | head -n 1)
+  STARTPOSE=$(tail -n +$SYSID /app/starts.txt | head -n 1)
 fi
 echo "LAUNCH.SH: Start location will be $STARTPOSE"
 
@@ -22,12 +22,12 @@ fi
 
 if [ -z "$SITL_OPTS" ]
 then
-  SITL_OPTS='--model=quad --defaults=/home/pilot/ardupilot/Tools/autotest/default_params/copter.parm'
+  SITL_OPTS='--model=quad --defaults=/app/copter.parm'
 fi
 
 # setting instance=2 removes port conflict with mavlink-routerd
-echo "$0: /home/pilot/ardupilot/build/sitl/bin/$SITL_EXE --sysid=$SYSID  --instance=2 --home=$STARTPOSE $SITL_OPTS &"
-/home/pilot/ardupilot/build/sitl/bin/$SITL_EXE --sysid=$SYSID --instance=2 --home=$STARTPOSE $SITL_OPTS &
+echo "$0: /usr/bin/$SITL_EXE --sysid=$SYSID  --instance=2 --home=$STARTPOSE $SITL_OPTS &"
+/usr/bin/$SITL_EXE --sysid=$SYSID --instance=2 --home=$STARTPOSE $SITL_OPTS &
 
 if [ -z "$MAVLINK_IP" ]
 then

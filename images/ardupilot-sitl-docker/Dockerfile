@@ -51,7 +51,7 @@ RUN DESTDIR=/home/pilot/dist ./waf install
 
 FROM ubuntu:22.04
 RUN apt-get update && \
-    apt-get install --no-install-recommends --no-install-suggests -y dash bash libc6 libgcc-s1 && \
+    apt-get install --no-install-recommends --no-install-suggests -y dash bash libc6 libgcc-s1 iproute2 && \
     apt-get clean && \
     rm -rf /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     useradd --create-home pilot
@@ -59,5 +59,5 @@ RUN apt-get update && \
 COPY --from=ardu_builder /home/pilot/dist/usr/bin/* /usr/bin/
 COPY --from=mavrouter_builder /home/pilot/dist/usr/bin/* /usr/bin/
 COPY ./app/ /app/
-ENTRYPOINT ["/usr/bin/bash", "-x", "/app/launch.sh"]
+ENTRYPOINT ["/usr/bin/bash", "/app/launch.sh"]
 
